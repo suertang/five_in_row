@@ -131,55 +131,87 @@ def on_click(i, j):
             if not check_win(WHITE):
                 current_player = BLACK
 
+def reset_game():
+    """重置游戏"""
+    global current_player
+    current_player = BLACK
+    for i in range(15):
+        for j in range(15):
+            if board[i][j]['stone'] is not None:
+                board[i][j]['canvas'].delete(board[i][j]['stone'])
+                board[i][j]['stone'] = None
+    # 重新绑定点击事件
+    board[0][0]['canvas'].bind("<Button-1>", lambda e: on_canvas_click(e))
+
 def show_winner(player):
     """显示获胜者弹窗"""
-    win_window = tk.Toplevel(root)
-    win_window.title("游戏结束")
-    tk.Label(win_window, text=f"{'黑棋' if player == BLACK else '白棋'} 获胜！", 
-             font=("Arial", 20)).pack(padx=20, pady=20)
-    tk.Button(win_window, text="确定", command=root.quit).pack(pady=10)
     # 禁用棋盘点击
     for row in board:
         for cell in row:
             cell['canvas'].unbind("<Button-1>")
+    
+    win_window = tk.Toplevel(root)
+    win_window.title("游戏结束")
+    tk.Label(win_window, text=f"{'黑棋' if player == BLACK else '白棋'} 获胜！", 
+             font=("Arial", 20)).pack(padx=20, pady=20)
+    
+    # 添加按钮容器
+    button_frame = tk.Frame(win_window)
+    button_frame.pack(pady=10)
+    
+    tk.Button(button_frame, text="重新开始", 
+              command=lambda: [win_window.destroy(), reset_game()]).pack(side=tk.LEFT, padx=10)
+    tk.Button(button_frame, text="退出", 
+              command=root.quit).pack(side=tk.LEFT, padx=10)
 
 def check_win(player):
     """检查是否有五子连珠"""
-    # Check horizontal
+    # 检查水平方向
     for i in range(15):
         for j in range(11):
             if all(board[i][j+k]['stone'] is not None and 
                    board[i][j+k]['canvas'].itemcget(board[i][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                show_winner(player)
+                # 确保只显示一次获胜窗口
+                if not hasattr(root, 'win_window_shown'):
+                    root.win_window_shown = True
+                    show_winner(player)
                 return True
 
-    # Check vertical
+    # 检查垂直方向
     for i in range(11):
         for j in range(15):
             if all(board[i+k][j]['stone'] is not None and 
                    board[i+k][j]['canvas'].itemcget(board[i+k][j]['stone'], 'fill') == player 
                    for k in range(5)):
-                show_winner(player)
+                if not hasattr(root, 'win_window_shown'):
+                    root.win_window_shown = True
+                    show_winner(player)
                 return True
 
-    # Check diagonal (top-left to bottom-right)
+    # 检查主对角线
     for i in range(11):
         for j in range(11):
             if all(board[i+k][j+k]['stone'] is not None and 
                    board[i+k][j+k]['canvas'].itemcget(board[i+k][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                show_winner(player)
+                if not hasattr(root, 'win_window_shown'):
+                    root.win_window_shown = True
+                    show_winner(player)
                 return True
 
-    # Check diagonal (bottom-left to top-right)
+    # 检查副对角线
     for i in range(4, 15):
         for j in range(11):
             if all(board[i-k][j+k]['stone'] is not None and 
                    board[i-k][j+k]['canvas'].itemcget(board[i-k][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                show_winner(player)
+                if not hasattr(root, 'win_window_shown'):
+                    root.win_window_shown = True
+                    show_winner(player)
                 return True
+    
+    return False
 
 if __name__ == "__main__":
     root = tk.Tk()
