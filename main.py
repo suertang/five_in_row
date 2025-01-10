@@ -157,21 +157,12 @@ def create_board():
     # 设置窗口标题和图标
     root.title("唐唐五子棋")
     
-    # 创建SVG图标
-    dwg = svgwrite.Drawing(size=(64, 64))
-    dwg.add(dwg.circle(center=(32, 32), r=30, fill='black'))
-    dwg.add(dwg.circle(center=(32, 32), r=25, fill='white'))
-    
-    # 将SVG保存到临时文件
-    temp_svg = io.BytesIO()
-    dwg.write(temp_svg)
-    temp_svg.seek(0)
-    
-    # 将SVG转换为PNG
-    img = Image.open(temp_svg)
-    img.load(scale=10)  # 提高缩放质量
-    icon = ImageTk.PhotoImage(img)
-    root.iconphoto(True, icon)
+    # 加载离线图标
+    try:
+        icon = ImageTk.PhotoImage(file="icon.png")
+        root.iconphoto(True, icon)
+    except:
+        pass  # 如果图标不存在则跳过
     
     # 创建棋盘
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
