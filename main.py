@@ -1,7 +1,16 @@
 import tkinter as tk
+from tkinter import messagebox
 import random
+import time
 from collections import defaultdict
+from threading import Timer
+
 # 游戏常量
+DIFFICULTY_LEVELS = {
+    '简单': {'delay': 0.5, 'randomness': 0.3},
+    '困难': {'delay': 1.0, 'randomness': 0.1},
+    '地狱': {'delay': 1.5, 'randomness': 0.0}
+}
 STONE_SIZE = 20  # 棋子半径
 BLACK = "black"  # 黑棋先手
 WHITE = "white"  # 白棋
@@ -42,6 +51,20 @@ def evaluate_position(i, j, player):
 
 def ai_move():
     """改进的AI算法"""
+    global current_player
+    
+    # 获取当前难度设置
+    difficulty = difficulty_var.get()
+    delay = DIFFICULTY_LEVELS[difficulty]['delay']
+    randomness = DIFFICULTY_LEVELS[difficulty]['randomness']
+    
+    # 显示AI思考提示
+    canvas.create_text(300, 300, text="AI思考中...", font=("Arial", 20), tags="thinking")
+    root.update()
+    
+    # 添加延迟
+    time.sleep(delay)
+    
     best_score = -1
     best_moves = []
     
@@ -61,9 +84,16 @@ def ai_move():
                 elif total_score == best_score:
                     best_moves.append((i, j))
     
-    # 随机选择一个最佳位置
+    # 根据难度选择位置
     if best_moves:
-        i, j = random.choice(best_moves)
+        # 简单模式有一定概率随机选择
+        if random.random() < randomness:
+            i, j = random.choice([(x,y) for x in range(15) for y in range(15) if board[x][y]['stone'] is None])
+        else:
+            i, j = random.choice(best_moves)
+        
+        # 移除思考提示
+        canvas.delete("thinking")
         x = j * 40 + 20
         y = i * 40 + 20
         stone = board[i][j]['canvas'].create_oval(
@@ -75,10 +105,31 @@ def ai_move():
         board[i][j]['stone'] = stone
         check_win(WHITE)
 
+def on_canvas_click(event):
+    """处理棋盘点击事件"""
+    # 计算点击的格子坐标
+    i = round((event.y - 20) / 40)
+    j = round((event.x - 20) / 40)
+    # 确保点击在棋盘范围内
+    if 0 <= i < 15 and 0 <= j < 15 and board[i][j]['stone'] is None:
+        on_click(i, j)
+
 def create_board():
+    """创建棋盘"""
+    global canvas
     board = []
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
+    
+    # 添加难度选择
+    difficulty_frame = tk.Frame(root)
+    difficulty_frame.pack(pady=10)
+    
+    tk.Label(difficulty_frame, text="选择难度:").pack(side=tk.LEFT)
+    difficulty_var = tk.StringVar(value='困难')
+    for level in DIFFICULTY_LEVELS:
+        tk.Radiobutton(difficulty_frame, text=level, variable=difficulty_var,
+                      value=level).pack(side=tk.LEFT, padx=5)
     
     # 绘制棋盘线
     for i in range(15):
@@ -94,14 +145,6 @@ def create_board():
         board.append(row)
     
     # 绑定点击事件
-    def on_canvas_click(event):
-        # 计算点击的格子坐标
-        i = round((event.y - 20) / 40)
-        j = round((event.x - 20) / 40)
-        # 确保点击在棋盘范围内
-        if 0 <= i < 15 and 0 <= j < 15 and board[i][j]['stone'] is None:
-            on_click(i, j)
-    
     canvas.bind("<Button-1>", on_canvas_click)
     
     return board
@@ -141,7 +184,10 @@ def reset_game():
                 board[i][j]['canvas'].delete(board[i][j]['stone'])
                 board[i][j]['stone'] = None
     # 重新绑定点击事件
-    board[0][0]['canvas'].bind("<Button-1>", lambda e: on_canvas_click(e))
+    canvas.bind("<Button-1>", on_canvas_click)
+    # 重置获胜标记
+    if hasattr(root, 'win_window_shown'):
+        delattr(root, 'win_window_shown')
 
 def show_winner(player):
     """显示获胜者弹窗"""
