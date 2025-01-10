@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 from collections import defaultdict
-
+#小圆圈棋子太小，看不清楚，特别是白棋 ai!
 # 游戏常量
 BLACK = "●"  # 黑棋先手
 WHITE = "○"  # 白棋
