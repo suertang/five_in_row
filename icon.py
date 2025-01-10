@@ -16,9 +16,27 @@ for i in range(15):
 # 绘制天元
 dwg.add(dwg.circle(center=(128, 128), r=4, fill='black'))
 
-# 绘制示例棋子
-dwg.add(dwg.circle(center=(128-34, 128-34), r=12, fill='black'))
-dwg.add(dwg.circle(center=(128+34, 128+34), r=12, fill='white'))
+# 绘制3D黑棋
+black_gradient = dwg.radialGradient(center=(0.5, 0.5), r=0.5)
+black_gradient.add_stop_color(0, '#000000')
+black_gradient.add_stop_color(0.7, '#333333')
+black_gradient.add_stop_color(1, '#666666')
+dwg.defs.add(black_gradient)
+
+dwg.add(dwg.circle(center=(128-34, 128-34), r=12, fill=black_gradient.get_paint_server()))
+# 添加高光
+dwg.add(dwg.circle(center=(128-34-4, 128-34-4), r=4, fill='white', opacity=0.8))
+
+# 绘制3D白棋
+white_gradient = dwg.radialGradient(center=(0.5, 0.5), r=0.5)
+white_gradient.add_stop_color(0, '#FFFFFF')
+white_gradient.add_stop_color(0.7, '#F0F0F0')
+white_gradient.add_stop_color(1, '#CCCCCC')
+dwg.defs.add(white_gradient)
+
+dwg.add(dwg.circle(center=(128+34, 128+34), r=12, fill=white_gradient.get_paint_server()))
+# 添加高光
+dwg.add(dwg.circle(center=(128+34-4, 128+34-4), r=4, fill='white', opacity=0.8))
 
 # 保存SVG
 dwg.save()
