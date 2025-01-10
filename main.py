@@ -205,11 +205,16 @@ def on_click(i, j):
     if current_player == BLACK:
         x = j * 40 + 20
         y = i * 40 + 20
-        # 加载SVG棋子图像
-        if current_player == BLACK:
-            stone_img = tk.PhotoImage(file="black_stone.png")
-        else:
-            stone_img = tk.PhotoImage(file="white_stone.png")
+        # 创建棋子
+        stone_color = current_player
+        stone = board[i][j]['canvas'].create_oval(
+            x - STONE_SIZE, y - STONE_SIZE,
+            x + STONE_SIZE, y + STONE_SIZE,
+            fill=stone_color,
+            outline='black' if stone_color == 'white' else 'white',
+            width=1,
+            tags="stone"
+        )
             
         stone = board[i][j]['canvas'].create_image(
             x, y,
