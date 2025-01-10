@@ -297,6 +297,42 @@ def check_win(player):
     
     return False
 
+def update_difficulty_display():
+    """更新难度显示"""
+    difficulty_label.config(text=f"难度：{difficulty_var.get()}")
+
+def create_difficulty_overlay():
+    """创建难度选择覆盖层"""
+    overlay = tk.Canvas(root, width=300, height=200, bg='white', highlightthickness=0)
+    overlay.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    
+    # 添加标题
+    overlay.create_text(150, 30, text="请选择游戏难度", font=("Arial", 14))
+    
+    # 创建难度按钮
+    y = 70
+    for level in DIFFICULTY_LEVELS:
+        btn = tk.Button(overlay, text=level, width=10, font=("Arial", 12),
+                       command=lambda l=level: on_difficulty_selected(l, overlay))
+        overlay.create_window(150, y, window=btn)
+        y += 50
+    
+    return overlay
+
+def select_difficulty():
+    """通过覆盖层选择难度"""
+    overlay = create_difficulty_overlay()
+    # 禁用主窗口交互
+    root.grab_set()
+    return difficulty_var.get()
+
+def on_difficulty_selected(level, overlay):
+    """处理难度选择"""
+    difficulty_var.set(level)
+    overlay.destroy()
+    root.grab_release()  # 恢复主窗口交互
+    update_difficulty_display()
+
 if __name__ == "__main__":
     root = tk.Tk()
     board = create_board()
