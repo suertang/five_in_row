@@ -230,10 +230,11 @@ def on_click(i, j):
             outline = "#CCCCCC"     # 灰色
 
         # 创建渐变椭圆
+        stone = None
         for r in range(STONE_SIZE, 0, -1):
             ratio = r / STONE_SIZE
             color = interpolate_color(fill_start, fill_end, ratio)
-            board[i][j]['canvas'].create_oval(
+            stone = board[i][j]['canvas'].create_oval(
                 x - r, y - r,
                 x + r, y + r,
                 fill=color,
