@@ -219,6 +219,7 @@ def on_click(i, j):
         y = i * 40 + 20
         # 创建棋子
         stone_color = current_player
+        player = current_player  # 定义player变量
         # 创建渐变效果
         if stone_color == BLACK:
             fill_start = "#333333"  # 深灰
@@ -240,7 +241,7 @@ def on_click(i, j):
                 fill=color,
                 outline=outline if r == STONE_SIZE else "",
                 width=1 if r == STONE_SIZE else 0,
-                tags=("stone", player)
+                tags=("stone", current_player)
             )
         board[i][j]['stone'] = stone
         
