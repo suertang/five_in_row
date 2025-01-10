@@ -168,12 +168,13 @@ def create_board():
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
     
-    # 在棋盘左上角添加难度显示
+    # 在棋盘右下角添加难度显示
     difficulty_var = tk.StringVar()
-    canvas.create_text(50, 30, text="难度：", font=("隶书", 16, "bold"), fill="white", tags="difficulty")
-    difficulty_label = canvas.create_text(100, 30, text="", font=("隶书", 16, "bold"), fill="white", tags="difficulty")
+    difficulty_label = canvas.create_text(540, 580, text="", font=("隶书", 14), fill="#8B4513", tags="difficulty")
     
-    # 通过弹窗选择难度
+    # 初始时不显示难度
+    difficulty_var.set("")
+    # 通过覆盖层选择难度
     select_difficulty()
     
     # 绘制棋盘线
@@ -243,19 +244,26 @@ def show_winner(player):
         for cell in row:
             cell['canvas'].unbind("<Button-1>")
     
-    win_window = tk.Toplevel(root)
-    win_window.title("游戏结束")
-    tk.Label(win_window, text=f"{'黑棋' if player == BLACK else '白棋'} 获胜！", 
-             font=("Arial", 20)).pack(padx=20, pady=20)
+    # 创建悬浮获胜窗口
+    win_overlay = tk.Canvas(root, width=300, height=200, bg='#F0D9B5', highlightthickness=2, 
+                           highlightbackground='#8B4513')
+    win_overlay.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
-    # 添加按钮容器
-    button_frame = tk.Frame(win_window)
-    button_frame.pack(pady=10)
+    # 添加标题
+    win_overlay.create_text(150, 50, text=f"{'黑棋' if player == BLACK else '白棋'} 获胜！", 
+                           font=("隶书", 20, "bold"), fill="#8B4513")
     
-    tk.Button(button_frame, text="重新开始", 
-              command=lambda: [win_window.destroy(), reset_game()]).pack(side=tk.LEFT, padx=10)
-    tk.Button(button_frame, text="退出", 
-              command=root.quit).pack(side=tk.LEFT, padx=10)
+    # 创建按钮容器
+    button_frame = tk.Frame(win_overlay, bg='#F0D9B5')
+    win_overlay.create_window(150, 130, window=button_frame)
+    
+    # 添加按钮
+    tk.Button(button_frame, text="重新开始", width=10, font=("隶书", 14),
+             bg='#8B4513', fg='white', activebackground='#A0522D',
+             command=lambda: [win_overlay.destroy(), reset_game()]).pack(side=tk.LEFT, padx=10)
+    tk.Button(button_frame, text="退出", width=10, font=("隶书", 14),
+             bg='#8B4513', fg='white', activebackground='#A0522D',
+             command=root.quit).pack(side=tk.LEFT, padx=10)
 
 def check_win(player):
     """检查是否有五子连珠"""
