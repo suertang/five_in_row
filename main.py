@@ -116,7 +116,7 @@ def on_canvas_click(event):
 
 def create_board():
     """创建棋盘"""
-    global canvas
+    global canvas, difficulty_var
     board = []
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
@@ -126,10 +126,17 @@ def create_board():
     difficulty_frame.pack(pady=10)
     
     tk.Label(difficulty_frame, text="选择难度:").pack(side=tk.LEFT)
-    difficulty_var = tk.StringVar(value='困难')
+    difficulty_var = tk.StringVar()
+    # 设置默认难度为"困难"
+    difficulty_var.set('困难')
+    # 创建单选按钮
     for level in DIFFICULTY_LEVELS:
-        tk.Radiobutton(difficulty_frame, text=level, variable=difficulty_var,
-                      value=level).pack(side=tk.LEFT, padx=5)
+        rb = tk.Radiobutton(difficulty_frame, text=level, variable=difficulty_var,
+                          value=level)
+        rb.pack(side=tk.LEFT, padx=5)
+        # 确保只有一个按钮被选中
+        if level == '困难':
+            rb.select()
     
     # 绘制棋盘线
     for i in range(15):
