@@ -1,7 +1,6 @@
 import tkinter as tk
 import random
 from collections import defaultdict
-#小圆圈棋子太小，看不清楚，特别是白棋 ai!
 # 游戏常量
 BLACK = "●"  # 黑棋先手
 WHITE = "○"  # 白棋
@@ -70,8 +69,8 @@ def create_board():
     for i in range(15):
         row = []
         for j in range(15):
-            cell = tk.Button(root, text="", width=2, height=1,
-                          font=("Arial", 12),
+            cell = tk.Button(root, text="", width=3, height=1,
+                          font=("Arial", 20),
                           command=lambda i=i, j=j: on_click(i, j))
             cell.grid(row=i, column=j)
             row.append(cell)
