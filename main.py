@@ -127,6 +127,9 @@ def on_click(i, j):
             current_player = WHITE
             # 执行AI移动
             ai_move()
+            # 切换回黑棋玩家
+            if not check_win(WHITE):
+                current_player = BLACK
 
 def show_winner(player):
     """显示获胜者弹窗"""
