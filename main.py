@@ -4,6 +4,9 @@ import random
 import time
 from collections import defaultdict
 from threading import Timer
+from PIL import Image, ImageTk
+import svgwrite
+import io
 
 # 游戏常量
 DIFFICULTY_LEVELS = {
@@ -151,18 +154,28 @@ def create_board():
     global canvas, difficulty_var, difficulty_label
     board = []
     
-    # 创建顶部信息栏
-    info_frame = tk.Frame(root)
-    info_frame.pack(fill=tk.X, pady=5)
+    # 设置窗口标题和图标
+    root.title("唐唐五子棋")
     
-    # 当前难度显示
-    difficulty_var = tk.StringVar()
-    difficulty_label = tk.Label(info_frame, text="难度：", font=("Arial", 12))
-    difficulty_label.pack(side=tk.LEFT, padx=10)
+    # 创建SVG图标
+    dwg = svgwrite.Drawing(size=(64, 64))
+    dwg.add(dwg.circle(center=(32, 32), r=30, fill='black'))
+    dwg.add(dwg.circle(center=(32, 32), r=25, fill='white'))
+    png_data = dwg.tostring()
+    
+    # 将SVG转换为PNG
+    img = Image.open(io.BytesIO(png_data.encode()))
+    icon = ImageTk.PhotoImage(img)
+    root.iconphoto(True, icon)
     
     # 创建棋盘
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
+    
+    # 在棋盘左上角添加难度显示
+    difficulty_var = tk.StringVar()
+    canvas.create_text(50, 30, text="难度：", font=("隶书", 16, "bold"), fill="white", tags="difficulty")
+    difficulty_label = canvas.create_text(100, 30, text="", font=("隶书", 16, "bold"), fill="white", tags="difficulty")
     
     # 通过弹窗选择难度
     select_difficulty()
@@ -299,20 +312,23 @@ def check_win(player):
 
 def update_difficulty_display():
     """更新难度显示"""
-    difficulty_label.config(text=f"难度：{difficulty_var.get()}")
+    canvas.itemconfig(difficulty_label, text=difficulty_var.get())
 
 def create_difficulty_overlay():
     """创建难度选择覆盖层"""
-    overlay = tk.Canvas(root, width=300, height=200, bg='white', highlightthickness=0)
+    overlay = tk.Canvas(root, width=300, height=200, bg='#F0D9B5', highlightthickness=2, 
+                       highlightbackground='#8B4513')
     overlay.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
     
     # 添加标题
-    overlay.create_text(150, 30, text="请选择游戏难度", font=("Arial", 14))
+    overlay.create_text(150, 30, text="请选择游戏难度", 
+                       font=("隶书", 18, "bold"), fill="#8B4513")
     
     # 创建难度按钮
     y = 70
     for level in DIFFICULTY_LEVELS:
-        btn = tk.Button(overlay, text=level, width=10, font=("Arial", 12),
+        btn = tk.Button(overlay, text=level, width=10, font=("隶书", 14),
+                       bg='#8B4513', fg='white', activebackground='#A0522D',
                        command=lambda l=level: on_difficulty_selected(l, overlay))
         overlay.create_window(150, y, window=btn)
         y += 50
@@ -335,5 +351,9 @@ def on_difficulty_selected(level, overlay):
 
 if __name__ == "__main__":
     root = tk.Tk()
+    # 设置窗口大小和位置
+    root.geometry("600x620+300+100")
+    # 设置窗口背景色
+    root.configure(bg='#F0D9B5')
     board = create_board()
     root.mainloop()
