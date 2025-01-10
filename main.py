@@ -1,5 +1,17 @@
 import tkinter as tk
-# 只有x 没有o，请完善 ai!
+import random
+
+current_player = "X"  # X goes first
+
+def ai_move():
+    # Simple AI - find first empty spot
+    for i in range(15):
+        for j in range(15):
+            if board[i][j]['text'] == "":
+                board[i][j].config(text="O")
+                check_win("O")
+                return
+
 def create_board():
     board = []
     for i in range(15):
@@ -13,9 +25,19 @@ def create_board():
     return board
 
 def on_click(i, j):
+    global current_player
+    
     if board[i][j]['text'] == "":
-        board[i][j].config(text="X")
-        check_win("X")
+        board[i][j].config(text=current_player)
+        check_win(current_player)
+        
+        # Switch players
+        current_player = "O" if current_player == "X" else "X"
+        
+        # If it's O's turn, make AI move
+        if current_player == "O":
+            ai_move()
+            current_player = "X"  # Switch back to X after AI move
 
 def check_win(player):
     # Check horizontal
