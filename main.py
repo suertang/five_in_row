@@ -111,12 +111,12 @@ def ai_move():
         )
         
         # 添加渐变填充
-        for i in range(STONE_SIZE, 0, -1):
-            ratio = i / STONE_SIZE
+        for k in range(STONE_SIZE, 0, -1):
+            ratio = k / STONE_SIZE
             color_index = min(int(ratio * len(colors)), len(colors)-1)
             board[i][j]['canvas'].create_oval(
-                x-i, y-i,
-                x+i, y+i,
+                x-k, y-k,
+                x+k, y+k,
                 fill=colors[color_index],
                 outline="",
                 tags="stone"
@@ -243,12 +243,12 @@ def on_click(i, j):
         )
         
         # 添加渐变填充
-        for i in range(STONE_SIZE, 0, -1):
-            ratio = i / STONE_SIZE
+        for k in range(STONE_SIZE, 0, -1):
+            ratio = k / STONE_SIZE
             color_index = min(int(ratio * len(colors)), len(colors)-1)
             board[i][j]['canvas'].create_oval(
-                x-i, y-i,
-                x+i, y+i,
+                x-k, y-k,
+                x+k, y+k,
                 fill=colors[color_index],
                 outline="",
                 tags="stone"
