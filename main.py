@@ -7,6 +7,18 @@ from threading import Timer
 from PIL import Image, ImageTk
 import svgwrite
 import io
+import colorsys
+
+def interpolate_color(color1, color2, ratio):
+    """在两个颜色之间插值"""
+    r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:7], 16)
+    r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:7], 16)
+    
+    r = int(r1 + (r2 - r1) * ratio)
+    g = int(g1 + (g2 - g1) * ratio)
+    b = int(b1 + (b2 - b1) * ratio)
+    
+    return f"#{r:02x}{g:02x}{b:02x}"
 
 # 游戏常量
 DIFFICULTY_LEVELS = {
@@ -207,22 +219,28 @@ def on_click(i, j):
         y = i * 40 + 20
         # 创建棋子
         stone_color = current_player
-        stone = board[i][j]['canvas'].create_oval(
-            x - STONE_SIZE, y - STONE_SIZE,
-            x + STONE_SIZE, y + STONE_SIZE,
-            fill=stone_color,
-            outline='black' if stone_color == 'white' else 'white',
-            width=1,
-            tags="stone"
-        )
-            
-        stone = board[i][j]['canvas'].create_image(
-            x, y,
-            image=stone_img,
-            tags="stone"
-        )
-        # 保持图像引用
-        board[i][j]['image'] = stone_img
+        # 创建渐变效果
+        if stone_color == BLACK:
+            fill_start = "#333333"  # 深灰
+            fill_end = "#000000"    # 黑色
+            outline = "#666666"     # 浅灰
+        else:
+            fill_start = "#FFFFFF"  # 白色
+            fill_end = "#F0F0F0"    # 浅灰
+            outline = "#CCCCCC"     # 灰色
+
+        # 创建渐变椭圆
+        for r in range(STONE_SIZE, 0, -1):
+            ratio = r / STONE_SIZE
+            color = interpolate_color(fill_start, fill_end, ratio)
+            board[i][j]['canvas'].create_oval(
+                x - r, y - r,
+                x + r, y + r,
+                fill=color,
+                outline=outline if r == STONE_SIZE else "",
+                width=1 if r == STONE_SIZE else 0,
+                tags="stone"
+            )
         board[i][j]['stone'] = stone
         
         # 检查是否获胜
