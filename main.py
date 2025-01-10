@@ -7,9 +7,9 @@ from threading import Timer
 
 # 游戏常量
 DIFFICULTY_LEVELS = {
-    '简单': {'delay': 0.5, 'randomness': 0.3},
-    '困难': {'delay': 1.0, 'randomness': 0.1},
-    '地狱': {'delay': 1.5, 'randomness': 0.0}
+    '简单': {'delay': 0.3, 'randomness': 0.3},
+    '困难': {'delay': 0.5, 'randomness': 0.1},
+    '地狱': {'delay': 0.8, 'randomness': 0.0}
 }
 STONE_SIZE = 20  # 棋子半径
 BLACK = "black"  # 黑棋先手
@@ -116,7 +116,7 @@ def on_canvas_click(event):
 
 def create_board():
     """创建棋盘"""
-    global canvas, difficulty_var
+    global canvas, difficulty_var, difficulty_buttons
     board = []
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
@@ -129,14 +129,19 @@ def create_board():
     difficulty_var = tk.StringVar()
     # 设置默认难度为"困难"
     difficulty_var.set('困难')
-    # 创建单选按钮
+    # 创建单选按钮并存储引用
+    difficulty_buttons = []
     for level in DIFFICULTY_LEVELS:
         rb = tk.Radiobutton(difficulty_frame, text=level, variable=difficulty_var,
                           value=level)
         rb.pack(side=tk.LEFT, padx=5)
+        difficulty_buttons.append(rb)
         # 确保只有一个按钮被选中
         if level == '困难':
             rb.select()
+    
+    # 显示当前难度提示
+    messagebox.showinfo("游戏开始", f"当前难度：{difficulty_var.get()}")
     
     # 绘制棋盘线
     for i in range(15):
@@ -184,6 +189,11 @@ def on_click(i, j):
 def reset_game():
     """重置游戏"""
     global current_player
+    # 显示当前难度提示
+    messagebox.showinfo("重新开始", f"当前难度：{difficulty_var.get()}")
+    # 禁用难度选择
+    for btn in difficulty_buttons:
+        btn.config(state=tk.DISABLED)
     current_player = BLACK
     for i in range(15):
         for j in range(15):
