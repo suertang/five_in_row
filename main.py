@@ -305,7 +305,7 @@ def check_win(player):
     for i in range(15):
         for j in range(11):
             if all(board[i][j+k]['stone'] is not None and 
-                   board[i][j+k]['canvas'].itemcget(board[i][j+k]['stone'], 'fill') == player 
+                   board[i][j+k]['canvas'].itemcget(board[i][j+k]['stone'], 'outline') == ('#666666' if player == BLACK else '#CCCCCC')
                    for k in range(5)):
                 # 确保只显示一次获胜窗口
                 if not hasattr(root, 'win_window_shown'):
@@ -317,7 +317,7 @@ def check_win(player):
     for i in range(11):
         for j in range(15):
             if all(board[i+k][j]['stone'] is not None and 
-                   board[i+k][j]['canvas'].itemcget(board[i+k][j]['stone'], 'fill') == player 
+                   board[i+k][j]['canvas'].itemcget(board[i+k][j]['stone'], 'outline') == ('#666666' if player == BLACK else '#CCCCCC')
                    for k in range(5)):
                 if not hasattr(root, 'win_window_shown'):
                     root.win_window_shown = True
@@ -328,7 +328,7 @@ def check_win(player):
     for i in range(11):
         for j in range(11):
             if all(board[i+k][j+k]['stone'] is not None and 
-                   board[i+k][j+k]['canvas'].itemcget(board[i+k][j+k]['stone'], 'fill') == player 
+                   board[i+k][j+k]['canvas'].itemcget(board[i+k][j+k]['stone'], 'outline') == ('#666666' if player == BLACK else '#CCCCCC')
                    for k in range(5)):
                 if not hasattr(root, 'win_window_shown'):
                     root.win_window_shown = True
@@ -339,7 +339,7 @@ def check_win(player):
     for i in range(4, 15):
         for j in range(11):
             if all(board[i-k][j+k]['stone'] is not None and 
-                   board[i-k][j+k]['canvas'].itemcget(board[i-k][j+k]['stone'], 'fill') == player 
+                   board[i-k][j+k]['canvas'].itemcget(board[i-k][j+k]['stone'], 'outline') == ('#666666' if player == BLACK else '#CCCCCC')
                    for k in range(5)):
                 if not hasattr(root, 'win_window_shown'):
                     root.win_window_shown = True
