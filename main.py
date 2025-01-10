@@ -96,10 +96,10 @@ def create_board():
     # 绑定点击事件
     def on_canvas_click(event):
         # 计算点击的格子坐标
-        i = (event.y - 20) // 40
-        j = (event.x - 20) // 40
+        i = round((event.y - 20) / 40)
+        j = round((event.x - 20) / 40)
         # 确保点击在棋盘范围内
-        if 0 <= i < 15 and 0 <= j < 15:
+        if 0 <= i < 15 and 0 <= j < 15 and board[i][j]['stone'] is None:
             on_click(i, j)
     
     canvas.bind("<Button-1>", on_canvas_click)
@@ -109,17 +109,17 @@ def create_board():
 def on_click(i, j):
     global current_player
     
-    if board[i][j]['stone'] is None:
-        x = j * 40 + 20
-        y = i * 40 + 20
-        stone = board[i][j]['canvas'].create_oval(
-            x-STONE_SIZE, y-STONE_SIZE,
-            x+STONE_SIZE, y+STONE_SIZE,
-            fill=current_player,
-            outline='black' if current_player == WHITE else 'white'
-        )
-        board[i][j]['stone'] = stone
-        check_win(current_player)
+    x = j * 40 + 20
+    y = i * 40 + 20
+    stone = board[i][j]['canvas'].create_oval(
+        x-STONE_SIZE, y-STONE_SIZE,
+        x+STONE_SIZE, y+STONE_SIZE,
+        fill=current_player,
+        outline='black' if current_player == WHITE else 'white'
+    )
+    board[i][j]['stone'] = stone
+    if check_win(current_player):
+        return
         
         # 切换玩家
         current_player = WHITE if current_player == BLACK else BLACK
@@ -129,15 +129,28 @@ def on_click(i, j):
             ai_move()
             current_player = BLACK  # 切换回玩家
 
+def show_winner(player):
+    """显示获胜者弹窗"""
+    win_window = tk.Toplevel(root)
+    win_window.title("游戏结束")
+    tk.Label(win_window, text=f"{'黑棋' if player == BLACK else '白棋'} 获胜！", 
+             font=("Arial", 20)).pack(padx=20, pady=20)
+    tk.Button(win_window, text="确定", command=root.quit).pack(pady=10)
+    # 禁用棋盘点击
+    for row in board:
+        for cell in row:
+            cell['canvas'].unbind("<Button-1>")
+
 def check_win(player):
+    """检查是否有五子连珠"""
     # Check horizontal
     for i in range(15):
         for j in range(11):
             if all(board[i][j+k]['stone'] is not None and 
                    board[i][j+k]['canvas'].itemcget(board[i][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                print(f"{player} wins!")
-                return
+                show_winner(player)
+                return True
 
     # Check vertical
     for i in range(11):
