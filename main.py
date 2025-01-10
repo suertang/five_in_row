@@ -99,11 +99,37 @@ def ai_move():
         canvas.delete("thinking")
         x = j * 40 + 20
         y = i * 40 + 20
+        # 创建渐变效果
+        colors = ["#F0F0F0", "#FFFFFF", "#CCCCCC"]
+            
         stone = board[i][j]['canvas'].create_oval(
             x-STONE_SIZE, y-STONE_SIZE,
             x+STONE_SIZE, y+STONE_SIZE,
-            fill=WHITE,
-            outline='black'
+            fill="",
+            outline="",
+            tags="stone"
+        )
+        
+        # 添加渐变填充
+        for i in range(STONE_SIZE, 0, -1):
+            ratio = i / STONE_SIZE
+            color_index = min(int(ratio * len(colors)), len(colors)-1)
+            board[i][j]['canvas'].create_oval(
+                x-i, y-i,
+                x+i, y+i,
+                fill=colors[color_index],
+                outline="",
+                tags="stone"
+            )
+        
+        # 添加高光
+        highlight_size = STONE_SIZE * 0.4
+        board[i][j]['canvas'].create_oval(
+            x-highlight_size, y-highlight_size,
+            x+highlight_size, y+highlight_size,
+            fill="white",
+            outline="",
+            tags="stone"
         )
         board[i][j]['stone'] = stone
         check_win(WHITE)
@@ -202,11 +228,40 @@ def on_click(i, j):
     if current_player == BLACK:
         x = j * 40 + 20
         y = i * 40 + 20
+        # 创建渐变效果
+        if current_player == BLACK:
+            colors = ["#333333", "#666666", "#000000"]
+        else:
+            colors = ["#F0F0F0", "#FFFFFF", "#CCCCCC"]
+            
         stone = board[i][j]['canvas'].create_oval(
             x-STONE_SIZE, y-STONE_SIZE,
             x+STONE_SIZE, y+STONE_SIZE,
-            fill=current_player,
-            outline='black' if current_player == WHITE else 'white'
+            fill="",
+            outline="",
+            tags="stone"
+        )
+        
+        # 添加渐变填充
+        for i in range(STONE_SIZE, 0, -1):
+            ratio = i / STONE_SIZE
+            color_index = min(int(ratio * len(colors)), len(colors)-1)
+            board[i][j]['canvas'].create_oval(
+                x-i, y-i,
+                x+i, y+i,
+                fill=colors[color_index],
+                outline="",
+                tags="stone"
+            )
+        
+        # 添加高光
+        highlight_size = STONE_SIZE * 0.4
+        board[i][j]['canvas'].create_oval(
+            x-highlight_size, y-highlight_size,
+            x+highlight_size, y+highlight_size,
+            fill="white" if current_player == WHITE else "#888888",
+            outline="",
+            tags="stone"
         )
         board[i][j]['stone'] = stone
         
