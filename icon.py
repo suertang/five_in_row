@@ -1,6 +1,5 @@
 import svgwrite
-from PIL import Image, ImageDraw
-import io
+import cairosvg
 
 # 创建SVG图标
 dwg = svgwrite.Drawing('icon.svg', size=(256, 256))
@@ -24,8 +23,5 @@ dwg.add(dwg.circle(center=(128+34, 128+34), r=12, fill='white'))
 # 保存SVG
 dwg.save()
 
-# 转换为PNG
-svg_data = dwg.tostring()
-img = Image.open(io.BytesIO(svg_data.encode('utf-8')))
-img = img.resize((256, 256), Image.ANTIALIAS)
-img.save('icon.png')
+# 使用cairosvg将SVG转换为PNG
+cairosvg.svg2png(url='icon.svg', write_to='icon.png')
