@@ -115,41 +115,57 @@ def on_canvas_click(event):
         on_click(i, j)
 
 def select_difficulty():
-    """通过弹窗选择难度"""
+    """通过按钮选择难度并自动关闭"""
     difficulty_window = tk.Toplevel(root)
     difficulty_window.title("选择难度")
-    difficulty_window.geometry("300x150")
+    difficulty_window.geometry("300x200")
     
-    difficulty_var = tk.StringVar(value='困难')  # 默认选择困难
+    # 添加标题
+    tk.Label(difficulty_window, text="请选择游戏难度", 
+            font=("Arial", 14), pady=10).pack()
     
-    tk.Label(difficulty_window, text="请选择游戏难度：", font=("Arial", 12)).pack(pady=10)
+    # 创建按钮容器
+    button_frame = tk.Frame(difficulty_window)
+    button_frame.pack(pady=10)
     
+    # 创建难度按钮
     for level in DIFFICULTY_LEVELS:
-        rb = tk.Radiobutton(difficulty_window, text=level, variable=difficulty_var,
-                          value=level, font=("Arial", 12))
-        rb.pack(anchor=tk.W, padx=50)
+        btn = tk.Button(button_frame, text=level, width=10, font=("Arial", 12),
+                       command=lambda l=level: on_difficulty_selected(l, difficulty_window))
+        btn.pack(pady=5)
     
-    def on_confirm():
-        difficulty_window.destroy()
-        messagebox.showinfo("游戏开始", f"当前难度：{difficulty_var.get()}")
-        return difficulty_var.get()
-    
-    tk.Button(difficulty_window, text="确定", command=on_confirm).pack(pady=10)
-    
-    difficulty_window.grab_set()  # 使弹窗保持焦点
-    root.wait_window(difficulty_window)  # 等待弹窗关闭
+    # 使弹窗保持焦点
+    difficulty_window.grab_set()
+    root.wait_window(difficulty_window)
     
     return difficulty_var.get()
 
+def on_difficulty_selected(level, window):
+    """处理难度选择"""
+    difficulty_var.set(level)
+    window.destroy()
+    update_difficulty_display()
+
 def create_board():
     """创建棋盘"""
-    global canvas, difficulty_var
+    global canvas, difficulty_var, difficulty_label
     board = []
+    
+    # 创建顶部信息栏
+    info_frame = tk.Frame(root)
+    info_frame.pack(fill=tk.X, pady=5)
+    
+    # 当前难度显示
+    difficulty_var = tk.StringVar()
+    difficulty_label = tk.Label(info_frame, text="难度：", font=("Arial", 12))
+    difficulty_label.pack(side=tk.LEFT, padx=10)
+    
+    # 创建棋盘
     canvas = tk.Canvas(root, width=15*40, height=15*40, bg='#F0D9B5')
     canvas.pack()
     
     # 通过弹窗选择难度
-    difficulty_var = tk.StringVar(value=select_difficulty())
+    select_difficulty()
     
     # 绘制棋盘线
     for i in range(15):
@@ -198,8 +214,7 @@ def reset_game():
     """重置游戏"""
     global current_player
     # 重新选择难度
-    new_difficulty = select_difficulty()
-    difficulty_var.set(new_difficulty)
+    select_difficulty()
     current_player = BLACK
     for i in range(15):
         for j in range(15):
@@ -286,3 +301,6 @@ if __name__ == "__main__":
     root = tk.Tk()
     board = create_board()
     root.mainloop()
+def update_difficulty_display():
+    """更新难度显示"""
+    difficulty_label.config(text=f"难度：{difficulty_var.get()}")
