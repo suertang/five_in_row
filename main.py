@@ -120,14 +120,13 @@ def on_click(i, j):
     board[i][j]['stone'] = stone
     if check_win(current_player):
         return
-        
-        # 切换玩家
-        current_player = WHITE if current_player == BLACK else BLACK
-        
-        # 如果是电脑的回合，执行AI移动
-        if current_player == WHITE:
-            ai_move()
-            current_player = BLACK  # 切换回玩家
+    
+    # 切换玩家
+    current_player = WHITE if current_player == BLACK else BLACK
+    
+    # 如果是电脑的回合，执行AI移动
+    if current_player == WHITE:
+        ai_move()
 
 def show_winner(player):
     """显示获胜者弹窗"""
@@ -158,8 +157,8 @@ def check_win(player):
             if all(board[i+k][j]['stone'] is not None and 
                    board[i+k][j]['canvas'].itemcget(board[i+k][j]['stone'], 'fill') == player 
                    for k in range(5)):
-                print(f"{player} wins!")
-                return
+                show_winner(player)
+                return True
 
     # Check diagonal (top-left to bottom-right)
     for i in range(11):
@@ -167,8 +166,8 @@ def check_win(player):
             if all(board[i+k][j+k]['stone'] is not None and 
                    board[i+k][j+k]['canvas'].itemcget(board[i+k][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                print(f"{player} wins!")
-                return
+                show_winner(player)
+                return True
 
     # Check diagonal (bottom-left to top-right)
     for i in range(4, 15):
@@ -176,8 +175,8 @@ def check_win(player):
             if all(board[i-k][j+k]['stone'] is not None and 
                    board[i-k][j+k]['canvas'].itemcget(board[i-k][j+k]['stone'], 'fill') == player 
                    for k in range(5)):
-                print(f"{player} wins!")
-                return
+                show_winner(player)
+                return True
 
 if __name__ == "__main__":
     root = tk.Tk()
