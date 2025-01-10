@@ -92,6 +92,18 @@ def create_board():
         for j in range(15):
             row.append({'canvas': canvas, 'stone': None})
         board.append(row)
+    
+    # 绑定点击事件
+    def on_canvas_click(event):
+        # 计算点击的格子坐标
+        i = (event.y - 20) // 40
+        j = (event.x - 20) // 40
+        # 确保点击在棋盘范围内
+        if 0 <= i < 15 and 0 <= j < 15:
+            on_click(i, j)
+    
+    canvas.bind("<Button-1>", on_canvas_click)
+    
     return board
 
 def on_click(i, j):
