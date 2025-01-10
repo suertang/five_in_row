@@ -161,10 +161,15 @@ def create_board():
     dwg = svgwrite.Drawing(size=(64, 64))
     dwg.add(dwg.circle(center=(32, 32), r=30, fill='black'))
     dwg.add(dwg.circle(center=(32, 32), r=25, fill='white'))
-    png_data = dwg.tostring()
+    
+    # 将SVG保存到临时文件
+    temp_svg = io.BytesIO()
+    dwg.write(temp_svg)
+    temp_svg.seek(0)
     
     # 将SVG转换为PNG
-    img = Image.open(io.BytesIO(png_data.encode()))
+    img = Image.open(temp_svg)
+    img.load(scale=10)  # 提高缩放质量
     icon = ImageTk.PhotoImage(img)
     root.iconphoto(True, icon)
     
