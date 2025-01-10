@@ -47,14 +47,14 @@ def evaluate_position(i, j, player):
         # 正向搜索
         x, y = i + dx, j + dy
         while 0 <= x < 15 and 0 <= y < 15 and board[x][y]['stone'] is not None and \
-              board[x][y]['canvas'].itemcget(board[x][y]['stone'], 'fill') == player:
+              player in board[x][y]['canvas'].gettags(board[x][y]['stone']):
             count += 1
             x += dx
             y += dy
         # 反向搜索
         x, y = i - dx, j - dy
         while 0 <= x < 15 and 0 <= y < 15 and board[x][y]['stone'] is not None and \
-              board[x][y]['canvas'].itemcget(board[x][y]['stone'], 'fill') == player:
+              player in board[x][y]['canvas'].gettags(board[x][y]['stone']):
             count += 1
             x -= dx
             y -= dy
