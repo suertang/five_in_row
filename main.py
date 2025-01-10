@@ -301,6 +301,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     board = create_board()
     root.mainloop()
-def update_difficulty_display():
-    """更新难度显示"""
-    difficulty_label.config(text=f"难度：{difficulty_var.get()}")
